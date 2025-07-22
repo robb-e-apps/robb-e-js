@@ -5,14 +5,16 @@ export async function handler(req, res) {
     return res.status(400).send('Missing `code` or `state`');
   }
 
-  const code_verifier = '';
+  const cookies = req.headers.cookie || '';
+  const match = cookies.match(/code_verifier=([^;]+)/);
+  const code_verifier = match ? decodeURIComponent(match[1]) : '';
 
-  const tokenRes = await fetch('https://YOUR_ROBBE_DOMAIN/oauth/token', {
+  const tokenRes = await fetch('http://localhost:3000/oauth/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       code,
-      app_id: 'YOUR_APP_ID',
+      app_id: '1f06708c-b44f-6a20-9695-aa8c81cce146',
       code_verifier,
       state,
     }),
