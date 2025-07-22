@@ -1,0 +1,32 @@
+export async function handler(req, res) {
+  const { code, state } = req.query;
+
+  if (!code || !state) {
+    return res.status(400).send('Missing `code` or `state`');
+  }
+
+  const code_verifier = '';
+
+  const tokenRes = await fetch('https://YOUR_ROBBE_DOMAIN/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      code,
+      app_id: 'YOUR_APP_ID',
+      code_verifier,
+      state,
+    }),
+  });
+
+  if (!tokenRes.ok) {
+    const err = await tokenRes.text();
+    return res.status(500).send(`❌ Token exchange failed: ${err}`);
+  }
+
+  const { access_token } = await tokenRes.json();
+
+  res.writeHead(302, {
+    Location: `${process.env.FRONTEND_URL || ''}/?access_token=${access_token}`,
+  });
+  res.end();
+}
