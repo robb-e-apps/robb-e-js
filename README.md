@@ -38,7 +38,7 @@ Authorization is initiated via:
 
 ```json
 {
-  redirectUrl: string;
+  "redirectUrl": "string";
 }
 ```
 
