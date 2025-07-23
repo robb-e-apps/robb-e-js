@@ -1,13 +1,15 @@
-const express = require('express');
-const path = require('path');
-const { handler } = require('./api/callback.js');
+import express from 'express';
+import { handler } from './api/callback.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Serve static files
 app.use(express.static(__dirname));
 
-// Proxy for serverless function
 app.get('/api/callback', (req, res) => handler(req, res));
 
 const PORT = 8080;
