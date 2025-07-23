@@ -1,3 +1,16 @@
+/**
+ * Robb-e OAuth2 PKCE Demo — main.js
+ *
+ * This file handles the client-side logic for the OAuth2 Authorization Code Flow with PKCE.
+ *
+ * Key functionality:
+ * - Generates a secure PKCE code verifier and corresponding SHA-256 challenge.
+ * - Sends a POST request to Robb-e's `/authorize` endpoint to obtain the login/consent redirect URL.
+ * - Redirects the user to Robb-e for authentication and authorization.
+ * - After successful login, Robb-e redirects back with an access token (via server callback).
+ * - The access token (JWT) is decoded and its payload is displayed in the browser.
+ */
+
 import {
   REDIRECT_URI,
   API_BASE,
@@ -53,11 +66,9 @@ async function login() {
 
 function showToken(jwt) {
   const payload = JSON.parse(atob(jwt.split('.')[1]));
-  document.getElementById('output').textContent = JSON.stringify(
-    payload,
-    null,
-    2,
-  );
+  const outputEl = document.getElementById('output');
+  outputEl.textContent = JSON.stringify(payload, null, 2);
+  outputEl.style.display = 'block';
 }
 
 window.onload = () => {
