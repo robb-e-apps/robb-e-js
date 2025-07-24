@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
-import { HOST_IP } from './config.js';
+import { HOST_IP, HOST, PORT } from './config.js';
 import { handler as callbackHandler } from './api/callback.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +33,6 @@ app.get('/main.js', (req, res) => {
 
 app.get('/oauth-callback', callbackHandler);
 
-const PORT = 8081;
 app.listen(PORT, HOST_IP, () => {
-  console.log(`🚀 App running at http://localhost:${PORT}`);
+  console.info(`🚀 App running at ${HOST}:${PORT}`);
 });

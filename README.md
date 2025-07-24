@@ -6,85 +6,49 @@ This demo showcases how a third-party **web application** can authenticate users
 
 ## 🎯 Purpose
 
-To demonstrate a **secure, standards-based user login flow** using Robb-e’s OAuth2 capabilities, where:
+To demonstrate a **secure, standards-based login flow** using Robb-e’s OAuth2 capabilities:
 
-- A user logs into Robb-e
-- Grants permission to an application
-- The app receives a JWT `accessToken` containing license data
+- A user logs in via Robb-e
+- Grants access to the application
+- The app receives a JWT `access_token`
+- The decoded token payload is displayed on the result screen
 
-> ⚠️ This demo **only covers the user login flow** using Authorization Code + PKCE. It does **not** cover machine-to-machine (client credentials) flows.
+> ⚠️ This demo **only covers user login via Authorization Code + PKCE**. It does **not** cover client credentials (M2M) flows.
 
 ---
 
-## 🔧 Related Endpoint
+## ▶️ How It Works
 
-Authorization is initiated via:
+### 🔐 OAuth2 Flow (PKCE)
 
-`POST /tenants/:tenantCode/applications/users/authorize`
+1. The app generates a `code_verifier` and `code_challenge` (SHA-256).
+2. It redirects the user to Robb-e’s authorize page:
 
-**Example request payload**:
+`GET /app/authorize?client_id=...&code_challenge=...&state=...&redirect_uri=...`
 
-```json
-{
-  "client_id": "your-app-id",
-  "state": "random-state-string",
-  "code_challenge": "base64url-pkce-challenge",
-  "scopes": ["licenses:own"],
-  "redirect_uri": "http://localhost:8080/api/callback"
-}
-```
+3. The user logs into Robb-e and confirms access.
+4. Robb-e redirects to your app’s `redirect_uri` with a `code` and `state`.
+5. Backend exchanges the code (and verifier) for an `access_token`:
+6. After exchange, the user is redirected to `/result?access_token=...`
+7. The frontend decodes the token and displays its content.
 
-**Response:**
+---
 
-```json
-{
-  "redirectUrl": "string";
-}
-```
+## 🚀 Getting Started
 
-## ▶️ Start the server
+### ▶️ Start the demo server
 
 ```bash
+npm install
 npm start
 ```
 
-## 🖥️ What Happens When You Click “Log in with Robb-e”?
+#### The app will be available at:
 
-1. Generates a **PKCE `code_challenge`**
-2. Sends a `POST` request to Robb-e’s `/authorize` endpoint
-3. Receives a `redirectUrl` for login & consent
-4. Redirects the user to the Robb-e login UI
-5. After user logs in and gives consent, they are redirected back to `/api/callback` with a `code` and `state`
-6. The `/api/callback` endpoint exchanges the `code` for an `accessToken`
-7. The access token (a JWT) is **decoded and displayed** in the browser
+`http://localhost:8081`
 
-## 📁 Project File Overview
+Make sure this matches the redirect URI registered in your Robb-e application settings:
 
-Here are the five main files and their roles in the demo:
+`http://localhost:8081/oauth-callback`
 
-### 1. `index.html`
-
-- A simple static HTML page that renders the UI.
-
-### 2. `main.js`
-
-- Handles the client-side logic of the OAuth2 flow.
-- Generates a PKCE `code_verifier` and its SHA-256 `code_challenge`.
-- Sends a `POST` request to Robb-e’s `/authorize` endpoint to receive a `redirectUrl`.
-- Redirects the user to the Robb-e login/consent page.
-- After redirect back from Robb-e, decodes the `access_token` JWT and displays its payload.
-
-### 3. `callback.js`
-
-- A backend (serverless-style) handler that runs when Robb-e redirects to the `redirect_uri` with a `code` and `state`.
-- Exchanges the authorization code and PKCE verifier for an `access_token` via the Robb-e `/oauth/token` endpoint.
-- Redirects the user back to the app with the `access_token` as a query parameter.
-
-### 5. `config.js`
-
-- Stores configuration values like:
-  - `REDIRECT_URI`
-  - `API_BASE`
-  - `TENANT_CODE`
-  - `CLIENT_ID`
-  - `AUTH_HEADER`
+---
