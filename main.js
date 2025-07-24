@@ -1,67 +1,47 @@
-/**
- * Robb-e OAuth2 PKCE Demo — main.js
- *
- * This file handles the client-side logic for the OAuth2 Authorization Code Flow with PKCE.
- *
- * Key functionality:
- * - Generates a secure PKCE code verifier and corresponding SHA-256 challenge.
- * - Sends a POST request to Robb-e's `/authorize` endpoint to obtain the login/consent redirect URL.
- * - Redirects the user to Robb-e for authentication and authorization.
- * - After successful login, Robb-e redirects back with an access token (via server callback).
- * - The access token (JWT) is decoded and its payload is displayed in the browser.
- */
-
-import {
-  REDIRECT_URI,
-  API_BASE,
-  TENANT_CODE,
-  CLIENT_ID,
-  AUTH_HEADER,
-} from './config.js';
+import { HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } from './config.js';
 
 const CODE_VERIFIER_KEY = 'code_verifier';
 const STATE_KEY = 'oauth_state';
 
-function generateCodeVerifier() {
-  const array = crypto.getRandomValues(new Uint8Array(32));
-  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+async function generateCodeChallengeAndVerifier() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  const codeVerifier = Array.from(array, (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
+
+  const encoder = new TextEncoder();
+  const data = encoder.encode(codeVerifier);
+  const digest = await window.crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(digest));
+  const codeChallenge = hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return { codeVerifier, codeChallenge };
 }
 
-function sha256Hex(input) {
-  return sha256(input);
+function storeSessionData(codeVerifier, sessionId) {
+  sessionStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
+  sessionStorage.setItem(STATE_KEY, sessionId);
+  document.cookie = `${CODE_VERIFIER_KEY}=${codeVerifier}; path=/`;
 }
 
-async function login() {
-  const verifier = generateCodeVerifier();
-  const challenge = sha256Hex(verifier);
-  const state = crypto.randomUUID();
+async function generateOAuth2URL() {
+  const { codeVerifier, codeChallenge } =
+    await generateCodeChallengeAndVerifier();
 
-  sessionStorage.setItem(CODE_VERIFIER_KEY, verifier);
-  sessionStorage.setItem(STATE_KEY, state);
-  document.cookie = `${CODE_VERIFIER_KEY}=${verifier}; path=/`;
+  const array = new Uint8Array(16);
+  window.crypto.getRandomValues(array);
+  const sessionId = Array.from(array, (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
 
-  const res = await fetch(
-    `${API_BASE}/tenants/${TENANT_CODE}/applications/users/authorize`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: AUTH_HEADER,
-      },
-      body: JSON.stringify({
-        client_id: CLIENT_ID,
-        state,
-        code_challenge: challenge,
-        scopes: ['licenses:own'],
-        redirect_uri: REDIRECT_URI,
-      }),
-    },
-  );
+  storeSessionData(codeVerifier, sessionId);
 
-  const { redirectUrl } = await res.json();
-  if (!redirectUrl) return alert('❌ redirectUrl not returned!');
+  const redirectUri = encodeURIComponent(`${HOST}:${PORT}/oauth-callback`);
 
-  window.location.href = redirectUrl;
+  return `${ROBBE_FE_URL}/app/authorize?client_id=${APPLICATION_CODE}&code_challenge=${codeChallenge}&redirect_uri=${redirectUri}&scopes=license:own&state=${sessionId}`;
 }
 
 function showToken(jwt) {
@@ -69,6 +49,11 @@ function showToken(jwt) {
   const outputEl = document.getElementById('output');
   outputEl.textContent = JSON.stringify(payload, null, 2);
   outputEl.style.display = 'block';
+}
+
+async function login() {
+  const oauthUrl = await generateOAuth2URL();
+  window.location.href = oauthUrl;
 }
 
 window.onload = () => {
