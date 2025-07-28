@@ -1,4 +1,4 @@
-import { HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } from './config.js';
+import { HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } from './config/config.js';
 
 const CODE_VERIFIER_KEY = 'code_verifier';
 const STATE_KEY = 'oauth_state';
