@@ -28,7 +28,7 @@ app.get('/config/config.js', (req, res) => {
 });
 
 app.get('/main.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'main.js'));
+  res.sendFile(path.join(__dirname, 'api/main.js'));
 });
 
 app.get('/oauth-callback', callbackHandler);
