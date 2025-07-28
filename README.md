@@ -34,6 +34,23 @@ To demonstrate a **secure, standards-based login flow** using Robb-e’s OAuth2 
 
 ---
 
+## 🔧 Setup Instructions
+
+Before running this demo, follow these steps to configure your Robb-e application:
+
+1. **Register on [Robb-e](https://dev.robb-e.com/)** if you don’t already have an account.
+2. **Create a product** in your Robb-e dashboard.
+3. **Add an application** to that product.
+4. In the application's settings:
+   - Set the **Redirect URI** to:  
+     `http://localhost:8081/oauth-callback`
+   - Save the generated **Application Code** (also referred to as `client_id`).
+5. In this demo app, update the config to use your **Application Code**.
+
+> ⚠️ Without a valid Application Code, the authentication flow will not work.
+
+---
+
 ## 🚀 Getting Started
 
 ### ▶️ Start the demo server
