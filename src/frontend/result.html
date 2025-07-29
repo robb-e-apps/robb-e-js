@@ -10,50 +10,78 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        height: 100vh;
+        padding: 2rem;
         margin: 0;
       }
 
-      h1 {
+      .token-box {
+        background: white;
+        border-radius: 8px;
+        max-width: 80%;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+
+      .token-title {
+        font-size: 1.2rem;
+        font-weight: bold;
         color: #007bff;
+        margin-bottom: 0.5rem;
+        text-align: center;
       }
 
       pre {
-        background: white;
-        padding: 1rem;
-        border-radius: 8px;
-        max-width: 80%;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
         white-space: pre-wrap;
         word-break: break-word;
+        overflow-x: auto;
+        margin: 0;
       }
     </style>
   </head>
   <body>
-    <h1>Access Token Payload</h1>
-    <pre id="token-info">Loading...</pre>
+    <div class="token-box">
+      <div class="token-title">Refresh Token Payload</div>
+      <pre id="refresh-token-info">Loading...</pre>
+    </div>
+
+    <div class="token-box">
+      <div class="token-title">Access Token Payload</div>
+      <pre id="access-token-info">Loading...</pre>
+    </div>
 
     <script>
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('access_token');
-
-      if (!token) {
-        document.getElementById('token-info').textContent =
-          'No access token provided.';
-      } else {
+      function decodeAndFormatToken(token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          document.getElementById('token-info').textContent = JSON.stringify(
-            payload,
-            null,
-            2,
-          );
+
+          ['iat', 'exp'].forEach((key) => {
+            if (payload[key]) {
+              const readable = new Date(payload[key] * 1000).toISOString();
+              payload[key] = `${payload[key]} (${readable})`;
+            }
+          });
+
+          return JSON.stringify(payload, null, 2);
         } catch (e) {
-          document.getElementById('token-info').textContent =
-            'Invalid token format.';
+          return 'Invalid token format.';
         }
       }
+
+      const refresh_token = sessionStorage.getItem('refresh_token');
+      const access_token = sessionStorage.getItem('access_token');
+
+      const refreshEl = document.getElementById('refresh-token-info');
+      const accessEl = document.getElementById('access-token-info');
+
+      refreshEl.textContent = refresh_token
+        ? decodeAndFormatToken(refresh_token)
+        : 'No refresh token provided.';
+
+      accessEl.textContent = access_token
+        ? decodeAndFormatToken(access_token)
+        : 'No access token provided.';
     </script>
   </body>
 </html>

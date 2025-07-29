@@ -50,13 +50,6 @@ async function generateOAuth2URL() {
   return `${ROBBE_FE_URL}/app/authorize?client_id=${APPLICATION_CODE}&code_challenge=${codeChallenge}&redirect_uri=${redirectUri}&scopes=license:own&state=${sessionId}`;
 }
 
-function showToken(jwt) {
-  const payload = JSON.parse(atob(jwt.split('.')[1]));
-  const outputEl = document.getElementById('output');
-  outputEl.textContent = JSON.stringify(payload, null, 2);
-  outputEl.style.display = 'block';
-}
-
 async function login() {
   const oauthUrl = await generateOAuth2URL();
   window.location.href = oauthUrl;
@@ -65,7 +58,4 @@ async function login() {
 window.onload = async () => {
   await loadConfig();
   document.getElementById('login-btn').onclick = login;
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('access_token')) showToken(params.get('access_token'));
 };
