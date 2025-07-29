@@ -5,6 +5,9 @@ import {
   PORT,
 } from '../config/config.js';
 
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+
 export async function handler(req, res) {
   const { code, state } = req.query;
   if (!code || !state) return res.status(400).send('Missing `code` or `state`');
@@ -28,10 +31,14 @@ export async function handler(req, res) {
     return res.status(500).send(`❌ Token exchange failed: ${err}`);
   }
 
-  const { access_token } = await tokenRes.json();
+  const { access_token, refresh_token } = await tokenRes.json();
 
-  res.writeHead(302, {
-    Location: `${HOST}:${PORT}/result?access_token=${access_token}`,
-  });
+  res.write(`
+  <script>
+    sessionStorage.setItem('${ACCESS_TOKEN_KEY}', '${access_token}');
+    sessionStorage.setItem('${REFRESH_TOKEN_KEY}', '${refresh_token}');
+    window.location.href = '${HOST}:${PORT}/result';
+  </script>
+`);
   res.end();
 }
