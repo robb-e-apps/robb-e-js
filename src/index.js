@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
-import { HOST_IP, HOST, PORT } from './config/config.js';
+import { HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } from './config/config.js';
 import { handler as callbackHandler } from './api/callback.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,8 +23,13 @@ app.get('/oauth-cancel', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/cancel.html'));
 });
 
-app.get('/config/config.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'config/config.js'));
+app.get('/config.json', (req, res) => {
+  res.json({
+    HOST,
+    PORT,
+    ROBBE_FE_URL,
+    APPLICATION_CODE,
+  });
 });
 
 app.get('/main.js', (req, res) => {
@@ -33,6 +38,6 @@ app.get('/main.js', (req, res) => {
 
 app.get('/oauth-callback', callbackHandler);
 
-app.listen(PORT, HOST_IP, () => {
+app.listen(PORT, () => {
   console.info(`🚀 App running at ${HOST}:${PORT}`);
 });

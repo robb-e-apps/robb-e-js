@@ -1,9 +1,10 @@
-import {
-  HOST,
-  PORT,
-  ROBBE_FE_URL,
-  APPLICATION_CODE,
-} from '../config/config.js';
+let HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE;
+
+async function loadConfig() {
+  const res = await fetch('/config.json');
+  const config = await res.json();
+  ({ HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } = config);
+}
 
 const CODE_VERIFIER_KEY = 'code_verifier';
 const STATE_KEY = 'oauth_state';
@@ -61,7 +62,8 @@ async function login() {
   window.location.href = oauthUrl;
 }
 
-window.onload = () => {
+window.onload = async () => {
+  await loadConfig();
   document.getElementById('login-btn').onclick = login;
 
   const params = new URLSearchParams(window.location.search);

@@ -1,14 +1,13 @@
-const PORT_FE = 8080;
-const PORT_BE = 3000;
-export const PORT = 8081;
-export const HOST = 'http://localhost';
-export const HOST_IP = '0.0.0.0';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const PORT = process.env.PORT;
+const HOST = process.env.HOST;
+const PORT_FE = process.env.PORT_FE;
+const PORT_BE = process.env.PORT_BE;
+const APPLICATION_CODE = process.env.APPLICATION_CODE;
+
+export { PORT, HOST, PORT_FE, PORT_BE, APPLICATION_CODE };
 
 export const ROBBE_BE_URL = `${HOST}:${PORT_BE}`;
 export const ROBBE_FE_URL = `${HOST}:${PORT_FE}`;
-
-export const APPLICATION_CODE = '1f0671ee-7157-6bb0-a82f-aa4c78effb0e';
-
-// Put {HOST}:{PORT}/oauth-callback as Redirect URL in your application in Robb-e
-// Example: http://localhost:8081/oauth-callback
-// Example: http://localhost:8081/oauth-cancel

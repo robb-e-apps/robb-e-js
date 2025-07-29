@@ -1,4 +1,9 @@
-import { HOST, ROBBE_BE_URL, APPLICATION_CODE, PORT } from '../config/config.js';
+import {
+  HOST,
+  ROBBE_BE_URL,
+  APPLICATION_CODE,
+  PORT,
+} from '../config/config.js';
 
 export async function handler(req, res) {
   const { code, state } = req.query;
