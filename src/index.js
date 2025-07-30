@@ -2,7 +2,13 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
-import { HOST, PORT, ROBBE_FE_URL, APPLICATION_CODE } from './config/config.js';
+import {
+  HOST,
+  PORT,
+  ROBBE_FE_URL,
+  ROBBE_BE_URL,
+  APPLICATION_CODE,
+} from './config/config.js';
 import { handler as callbackHandler } from './api/callback.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,12 +34,17 @@ app.get('/config.json', (req, res) => {
     HOST,
     PORT,
     ROBBE_FE_URL,
+    ROBBE_BE_URL,
     APPLICATION_CODE,
   });
 });
 
 app.get('/main.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'api/main.js'));
+});
+
+app.get('/user.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'api/user.js'));
 });
 
 app.get('/oauth-callback', callbackHandler);
