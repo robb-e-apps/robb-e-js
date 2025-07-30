@@ -38,6 +38,21 @@
         overflow-x: auto;
         margin: 0;
       }
+
+      button {
+        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
     </style>
   </head>
   <body>
@@ -51,7 +66,15 @@
       <pre id="access-token-info">Loading...</pre>
     </div>
 
-    <script>
+    <button id="get-user-btn">Get User Details</button>
+
+    <h2 id="user-greeting" style="margin: 1rem 0; color: #333"></h2>
+
+    <pre id="user-details"></pre>
+
+    <script type="module">
+      import { fetchUserDetails } from '/user.js';
+
       function decodeAndFormatToken(token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
@@ -72,16 +95,38 @@
       const refresh_token = sessionStorage.getItem('refresh_token');
       const access_token = sessionStorage.getItem('access_token');
 
-      const refreshEl = document.getElementById('refresh-token-info');
-      const accessEl = document.getElementById('access-token-info');
-
-      refreshEl.textContent = refresh_token
+      document.getElementById('refresh-token-info').textContent = refresh_token
         ? decodeAndFormatToken(refresh_token)
         : 'No refresh token provided.';
 
-      accessEl.textContent = access_token
+      document.getElementById('access-token-info').textContent = access_token
         ? decodeAndFormatToken(access_token)
         : 'No access token provided.';
+
+      document.getElementById('get-user-btn').onclick = async () => {
+        const accessToken = sessionStorage.getItem('access_token');
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        const tenantCode = payload.tenantCode;
+        const userCode = payload.userCode;
+
+        try {
+          const userData = await fetchUserDetails({
+            accessToken,
+            tenantCode,
+            userCode,
+          });
+          document.getElementById('user-greeting').textContent =
+            `Hello, ${userData.name}`;
+          document.getElementById('user-details').textContent = JSON.stringify(
+            userData,
+            null,
+            2,
+          );
+        } catch (err) {
+          document.getElementById('user-details').textContent =
+            'Failed to load user data.';
+        }
+      };
     </script>
   </body>
 </html>
