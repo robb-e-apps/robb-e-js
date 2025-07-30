@@ -73,8 +73,6 @@
     <pre id="user-details"></pre>
 
     <script type="module">
-      import { fetchUserDetails } from '/user.js';
-
       function decodeAndFormatToken(token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
@@ -103,9 +101,35 @@
         ? decodeAndFormatToken(access_token)
         : 'No access token provided.';
 
+      async function fetchUserDetails({ tenantCode, userCode, accessToken }) {
+        const res = await fetch(`/users/${tenantCode}/${userCode}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+
+        return await res.json();
+      }
+
       document.getElementById('get-user-btn').onclick = async () => {
         const accessToken = sessionStorage.getItem('access_token');
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        if (!accessToken) {
+          alert('Access token missing');
+          return;
+        }
+
+        let payload;
+        try {
+          payload = JSON.parse(atob(accessToken.split('.')[1]));
+        } catch {
+          alert('Invalid access token format');
+          return;
+        }
+
         const tenantCode = payload.tenantCode;
         const userCode = payload.userCode;
 
@@ -115,6 +139,7 @@
             tenantCode,
             userCode,
           });
+
           document.getElementById('user-greeting').textContent =
             `Hello, ${userData.name}`;
           document.getElementById('user-details').textContent = JSON.stringify(
@@ -123,6 +148,7 @@
             2,
           );
         } catch (err) {
+          console.error(err);
           document.getElementById('user-details').textContent =
             'Failed to load user data.';
         }
