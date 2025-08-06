@@ -39,15 +39,27 @@ To demonstrate a **secure, standards-based login flow** using Robb-e’s OAuth2 
 Before running this demo, follow these steps to configure your Robb-e application:
 
 1. **Register on [Robb-e](https://dev.robb-e.com/)** if you don’t already have an account.
-2. **Create a product** in your Robb-e dashboard.
-3. **Add an application** to that product.
-4. In the application's settings:
-   - Set the **Redirect URI** to:  
-     `http://localhost:8081/oauth-callback`
+2. **You should have a Robb-e Sales license**
+3. **Create a product** in your Robb-e dashboard.
+4. **Create Free or Trial Edition** in product to use it as **_default license type_** in your Application
+5. **Add an application** to that product (**Integration** tab).
+6. In the application's settings:
+   - Set the your **Redirect URI** and **Cancel URI**. For example:
+     - `http://localhost:8095/oauth-callback`
+     - `http://localhost:8095/oauth-cancel`
+     - Select default license type for Application
    - Save the generated **Application Code** (also referred to as `client_id`).
-5. In this demo app, update the config to use your **Application Code**.
+7. In this demo app, create `.env` file with necessary information:
+   - **PORT=8095** _(Your app port)_
+   - **HOST=http://localhost** _(Your app host)_
+   - **PORT_FE=8080** _(Robb-e frontend port)_
+   - **PORT_BE=3000** _(Robb-e backend port)_
+   - **APPLICATION_CODE=1f071fae-6b8f-6890-97c0-aaa0fd990802** _(Your created Application `(client_id)`)_
+     `
 
 > ⚠️ Without a valid Application Code, the authentication flow will not work.
+
+> ⚠️ Also don't forget to logout from Robb-e to correctly test thr OAuth flow
 
 ---
 
@@ -62,10 +74,6 @@ npm start
 
 #### The app will be available at:
 
-`http://localhost:8081`
-
-Make sure this matches the redirect URI registered in your Robb-e application settings:
-
-`http://localhost:8081/oauth-callback`
+`http://localhost:8095`
 
 ---
