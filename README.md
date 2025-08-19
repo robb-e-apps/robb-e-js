@@ -1,79 +1,60 @@
-# 🔐 Robb-e Web Integration Demo: OAuth2 Authorization Code Flow (User Login)
+# 🔐 Robb-e Platform Web Integration Demo
 
-This demo showcases how a third-party **web application** can authenticate users via **Robb-e** and access their license data using the **OAuth2 Authorization Code Flow with PKCE**.
+OAuth2 Authorization Code Flow (User Login)
 
----
-
-## 🎯 Purpose
-
-To demonstrate a **secure, standards-based login flow** using Robb-e’s OAuth2 capabilities:
-
-- A user logs in via Robb-e
-- Grants access to the application
-- The app receives a JWT `access_token`
-- The decoded token payload is displayed on the result screen
-
-> ⚠️ This demo **only covers user login via Authorization Code + PKCE**. It does **not** cover client credentials (M2M) flows.
+This project demonstrates how a third-party **web application** can authenticate users via the **Robb-e platform** using the **OAuth2 Authorization Code Flow with PKCE**.
 
 ---
 
-## ▶️ How It Works
+## 📋 Prerequisites
 
-### 🔐 OAuth2 Flow (PKCE)
+Before running the demo, you must register and set up your **Application** on the [Robb-e platform](https://www.robb-e.com):
 
-1. The app generates a `code_verifier` and `code_challenge` (SHA-256).
-2. It redirects the user to Robb-e’s authorize page:
+1. Ensure you select a **Robb-e Sales product** (checkbox) when registering your workspace.
+2. In the left menu, go to **Portfolio → Products** and create a **Product**.
+3. Create at least one **Component** and add it to newly created **Free or Trial Edition**.
+4. You can skip **Pricing** tab in testing mode.
+5. Under the product’s **Integration** tab, create a new **Application**.
+   - Configure Redirect URI: `http://localhost:8095/oauth-callback`
+   - Configure Cancel URI: `http://localhost:8095/oauth-cancel`
+   - Select the default license type
+6. Save the generated **Application Code** (`client_id`).
+7. Open the existing `.env` file in this project and replace the dummy value of `APPLICATION_CODE` with your code from the Robb-e platform:
 
-`GET /app/authorize?client_id=...&code_challenge=...&state=...&redirect_uri=...`
+```env
+PORT=8095
+HOST=http://localhost
+PORT_FE=8080
+PORT_BE=3000
 
-3. The user logs into Robb-e and confirms access.
-4. Robb-e redirects to your app’s `redirect_uri` with a `code` and `state`.
-5. Backend exchanges the code (and verifier) for an `access_token`:
-6. After exchange, the user is redirected to `/result?access_token=...`
-7. The frontend decodes the token and displays its content.
+APPLICATION_CODE=[paste-your-application-code-here]
+```
 
----
-
-## 🔧 Setup Instructions
-
-Before running this demo, follow these steps to configure your Robb-e application:
-
-1. **Register on [Robb-e](https://dev.robb-e.com/)** if you don’t already have an account.
-2. **You should have a Robb-e Sales license**
-3. **Create a product** in your Robb-e dashboard.
-4. **Create Free or Trial Edition** in product to use it as **_default license type_** in your Application
-5. **Add an application** to that product (**Integration** tab).
-6. In the application's settings:
-   - Set the your **Redirect URI** and **Cancel URI**. For example:
-     - `http://localhost:8095/oauth-callback`
-     - `http://localhost:8095/oauth-cancel`
-     - Select default license type for Application
-   - Save the generated **Application Code** (also referred to as `client_id`).
-7. In this demo app, create `.env` file with necessary information:
-   - **PORT=8095** _(Your app port)_
-   - **HOST=http://localhost** _(Your app host)_
-   - **PORT_FE=8080** _(Robb-e frontend port)_
-   - **PORT_BE=3000** _(Robb-e backend port)_
-   - **APPLICATION_CODE=1f071fae-6b8f-6890-97c0-aaa0fd990802** _(Your created Application `(client_id)`)_
-     `
-
-> ⚠️ Without a valid Application Code, the authentication flow will not work.
-
-> ⚠️ Also don't forget to logout from Robb-e to correctly test thr OAuth flow
+> ⚠️ Without a valid `APPLICATION_CODE`, the login flow will not work.
+> ⚠️ In **testing mode**, the login user must be a **member of the workspace** where the Product and Application have been registered.
+> ⚠️ Make sure you are logged out of the Robb-e platform before testing the flow.
 
 ---
 
-## 🚀 Getting Started
+## ▶️ Start the Application
 
-### ▶️ Start the demo server
+Install dependencies and run the demo:
 
 ```bash
 npm install
 npm start
 ```
 
-#### The app will be available at:
-
-`http://localhost:8095`
+The app will be available at:
+👉 [http://localhost:8095](http://localhost:8095)
 
 ---
+
+## ▶️ Test the Integration
+
+1. Open the demo app and click **Log in with Robb-e**.
+2. You are redirected to the Robb-e platform login screen. Enter your email and verification code.
+3. After login, confirm access for the product application.
+4. The demo app exchanges the authorization code for tokens and displays the **Access Token** and **Refresh Token** payloads.
+5. Click **Get User Details** to call a standard API endpoint with the `Authorization: Bearer <token>` header.
+   The user details are displayed, demonstrating a simple token-based API request.
