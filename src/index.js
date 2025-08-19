@@ -103,6 +103,13 @@ app.get('/users/:tenantCode/:userCode', async (req, res) => {
   }
 });
 
+app.get('/logout', (req, res) => {
+  res.clearCookie('code_verifier', { path: '/' });
+  res.clearCookie('oauth_state', { path: '/' });
+  res.clearCookie('connect.sid', { path: '/' });
+  res.redirect('/');
+});
+
 app.listen(PORT, () => {
   console.info(`🚀 App running at ${HOST}:${PORT}`);
 });

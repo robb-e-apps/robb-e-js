@@ -53,6 +53,10 @@
       button:hover {
         background-color: #0056b3;
       }
+
+      #logout-btn:hover {
+        background-color: #a71d2a;
+      }
     </style>
   </head>
   <body>
@@ -71,6 +75,8 @@
     <h2 id="user-greeting" style="margin: 1rem 0; color: #333"></h2>
 
     <pre id="user-details"></pre>
+
+    <button id="logout-btn" style="background-color: #dc3545">Logout</button>
 
     <script type="module">
       function decodeAndFormatToken(token) {
@@ -152,6 +158,11 @@
           document.getElementById('user-details').textContent =
             'Failed to load user data.';
         }
+      };
+
+      document.getElementById('logout-btn').onclick = () => {
+        sessionStorage.clear();
+        window.location.href = '/logout';
       };
     </script>
   </body>
