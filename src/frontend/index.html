@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Robb-e OAuth2 PKCE Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      button {
+        font-size: 1.2rem;
+        padding: 12px 24px;
+        cursor: pointer;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      pre {
+        margin-top: 30px;
+        max-width: 80%;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background: #fff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Robb-e OAuth2 Demo</h1>
+    <button id="login-btn">Log in with Robb-e</button>
+    <pre id="output" style="display: none"></pre>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

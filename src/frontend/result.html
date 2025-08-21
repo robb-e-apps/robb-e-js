@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OAuth2 Token Info</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        margin: 0;
+      }
+
+      .token-box {
+        background: white;
+        border-radius: 8px;
+        max-width: 80%;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+
+      .token-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-x: auto;
+        margin: 0;
+      }
+
+      button {
+        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #logout-btn:hover {
+        background-color: #a71d2a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="token-box">
+      <div class="token-title">Refresh Token Payload</div>
+      <pre id="refresh-token-info">Loading...</pre>
+    </div>
+
+    <div class="token-box">
+      <div class="token-title">Access Token Payload</div>
+      <pre id="access-token-info">Loading...</pre>
+    </div>
+
+    <button id="get-user-btn">Get User Details</button>
+
+    <h2 id="user-greeting" style="margin: 1rem 0; color: #333"></h2>
+
+    <pre id="user-details"></pre>
+
+    <button id="logout-btn" style="background-color: #dc3545">Logout</button>
+
+    <script type="module">
+      function decodeAndFormatToken(token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+
+          ['iat', 'exp'].forEach((key) => {
+            if (payload[key]) {
+              const readable = new Date(payload[key] * 1000).toISOString();
+              payload[key] = `${payload[key]} (${readable})`;
+            }
+          });
+
+          return JSON.stringify(payload, null, 2);
+        } catch (e) {
+          return 'Invalid token format.';
+        }
+      }
+
+      const refresh_token = sessionStorage.getItem('refresh_token');
+      const access_token = sessionStorage.getItem('access_token');
+
+      document.getElementById('refresh-token-info').textContent = refresh_token
+        ? decodeAndFormatToken(refresh_token)
+        : 'No refresh token provided.';
+
+      document.getElementById('access-token-info').textContent = access_token
+        ? decodeAndFormatToken(access_token)
+        : 'No access token provided.';
+
+      async function fetchUserDetails({ tenantCode, userCode, accessToken }) {
+        const res = await fetch(`/users/${tenantCode}/${userCode}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+
+        return await res.json();
+      }
+
+      document.getElementById('get-user-btn').onclick = async () => {
+        const accessToken = sessionStorage.getItem('access_token');
+        if (!accessToken) {
+          alert('Access token missing');
+          return;
+        }
+
+        let payload;
+        try {
+          payload = JSON.parse(atob(accessToken.split('.')[1]));
+        } catch {
+          alert('Invalid access token format');
+          return;
+        }
+
+        const tenantCode = payload.tenantCode;
+        const userCode = payload.userCode;
+
+        try {
+          const userData = await fetchUserDetails({
+            accessToken,
+            tenantCode,
+            userCode,
+          });
+
+          document.getElementById('user-greeting').textContent =
+            `Hello, ${userData.name}`;
+          document.getElementById('user-details').textContent = JSON.stringify(
+            userData,
+            null,
+            2,
+          );
+        } catch (err) {
+          console.error(err);
+          document.getElementById('user-details').textContent =
+            'Failed to load user data.';
+        }
+      };
+
+      document.getElementById('logout-btn').onclick = () => {
+        sessionStorage.clear();
+        window.location.href = '/logout';
+      };
+    </script>
+  </body>
+</html>
