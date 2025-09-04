@@ -31,6 +31,10 @@ app.get('/oauth-cancel', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/cancel.html'));
 });
 
+app.get('/error.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/error.html'));
+});
+
 app.get('/main.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'api/main.js'));
 });
@@ -103,7 +107,7 @@ app.get('/users/:tenantCode/:userCode', async (req, res) => {
   }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/clear-cookies', (req, res) => {
   res.clearCookie('code_verifier', { path: '/' });
   res.clearCookie('oauth_state', { path: '/' });
   res.clearCookie('connect.sid', { path: '/' });
