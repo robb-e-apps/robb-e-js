@@ -20,19 +20,23 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/index.html'));
+  res.sendFile(path.join(__dirname, 'user/frontend/index.html'));
 });
 
 app.get('/result', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/result.html'));
+  res.sendFile(path.join(__dirname, 'user/frontend/result.html'));
 });
 
 app.get('/oauth-cancel', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/cancel.html'));
+  res.sendFile(path.join(__dirname, 'user/frontend/cancel.html'));
+});
+
+app.get('/error.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'user/frontend/error.html'));
 });
 
 app.get('/main.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'api/main.js'));
+  res.sendFile(path.join(__dirname, 'user/api/main.js'));
 });
 
 app.get('/oauth-callback', callbackHandler);
@@ -103,7 +107,7 @@ app.get('/users/:tenantCode/:userCode', async (req, res) => {
   }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/clear-cookies', (req, res) => {
   res.clearCookie('code_verifier', { path: '/' });
   res.clearCookie('oauth_state', { path: '/' });
   res.clearCookie('connect.sid', { path: '/' });

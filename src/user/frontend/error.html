@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Authorization Error</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #fff;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      h1 {
+        color: #cc0000;
+        margin-bottom: 1rem;
+      }
+
+      .error-box {
+        background: #fef2f2;
+        border: 1px solid #f5c2c7;
+        border-radius: 8px;
+        padding: 1rem 2rem;
+        max-width: 600px;
+        text-align: center;
+        color: #721c24;
+        margin-top: 1rem;
+      }
+
+      .error-box h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+      }
+
+      .error-box p {
+        margin: 0.2rem 0;
+      }
+
+      button {
+        margin-top: 2rem;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Authorization Failed</h1>
+    <p id="error-message">
+      Something went wrong during the authorization process.
+    </p>
+
+    <div class="error-box" id="error-box" style="display: none">
+      <h2 id="error-name">Unknown Error</h2>
+      <p id="error-detail"></p>
+      <p id="error-code" style="font-size: 0.9rem; color: #555"></p>
+    </div>
+
+    <button id="go-home">← Go Home</button>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const message = params.get('message');
+      const error = params.get('error');
+
+      if (message) {
+        document.getElementById('error-message').textContent =
+          decodeURIComponent(message);
+      }
+
+      if (error) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(error));
+          document.getElementById('error-box').style.display = 'block';
+
+          document.getElementById('error-name').textContent =
+            parsed.errorName || 'Unknown Error';
+
+          document.getElementById('error-detail').textContent =
+            parsed.message || 'No message provided';
+
+          if (parsed.statusCode) {
+            document.getElementById('error-code').textContent =
+              `Status code: ${parsed.statusCode}`;
+          }
+        } catch (e) {
+          document.getElementById('error-box').style.display = 'block';
+          document.getElementById('error-name').textContent =
+            'Invalid Error Format';
+          document.getElementById('error-detail').textContent =
+            decodeURIComponent(error);
+        }
+      }
+
+      document.getElementById('go-home').onclick = () => {
+        sessionStorage.clear();
+        window.location.href = '/clear-cookies';
+      };
+    </script>
+  </body>
+</html>
