@@ -3,23 +3,108 @@
   <head>
     <meta charset="UTF-8" />
     <title>M2M OAuth 2.0 Demo</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 300px;
+        background-color: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input[type='text'] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        background-color: #eee;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      pre {
+        margin-top: 30px;
+        max-width: 80%;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background: #fff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        font-size: 0.95rem;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 16px;
+        font-size: 0.9rem;
+        color: #777;
+      }
+    </style>
   </head>
   <body>
     <h1>M2M OAuth 2.0 Flow</h1>
+
     <form id="auth-form">
       <label for="client-id">Client ID:</label>
-      <input type="text" id="client-id" readonly /><br />
+      <input type="text" id="client-id" />
 
       <label for="client-secret">Client Secret:</label>
-      <input type="text" id="client-secret" readonly /><br />
+      <input type="text" id="client-secret" />
 
       <button type="submit">🔐 Authorize (client_credentials)</button>
     </form>
 
-    <button id="refresh-btn">Refresh Token</button>
-    <button id="call-api-btn">Call Protected API</button>
+    <div class="button-group">
+      <button id="refresh-btn">🔄 Refresh Token</button>
+      <button id="call-api-btn">🔐 Call Protected API</button>
+    </div>
 
     <pre id="result-box"></pre>
+
+    <footer>Client Credentials Grant — Robb-e OAuth2 Demo</footer>
 
     <script src="/m2m/m2m-main.js" type="module"></script>
   </body>

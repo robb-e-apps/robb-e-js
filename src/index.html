@@ -2,8 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Robb-e OAuth2 PKCE Demo</title>
-    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js"></script>
+    <title>Robb-e OAuth2 Demo</title>
     <style>
       body {
         margin: 0;
@@ -17,40 +16,45 @@
       }
 
       h1 {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        color: #333;
       }
 
-      button {
+      .button-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      a.button {
+        display: inline-block;
+        text-decoration: none;
         font-size: 1.2rem;
         padding: 12px 24px;
-        cursor: pointer;
-        border: none;
         background-color: #007bff;
         color: white;
         border-radius: 6px;
         transition: background-color 0.3s;
       }
 
-      button:hover {
+      a.button:hover {
         background-color: #0056b3;
       }
 
-      pre {
-        margin-top: 30px;
-        max-width: 80%;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        background: #fff;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      footer {
+        position: absolute;
+        bottom: 20px;
+        font-size: 0.9rem;
+        color: #777;
       }
     </style>
   </head>
   <body>
     <h1>Robb-e OAuth2 Demo</h1>
-    <button id="login-btn">Log in with Robb-e</button>
-    <pre id="output" style="display: none"></pre>
-    <script type="module" src="user-main.js"></script>
+    <div class="button-group">
+      <a class="button" href="/user">🔐 User Flow</a>
+      <a class="button" href="/m2m">🤖 M2M Flow</a>
+    </div>
+    <footer>OAuth 2.0 | PKCE | Client Credentials</footer>
   </body>
 </html>
