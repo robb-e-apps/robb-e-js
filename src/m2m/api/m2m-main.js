@@ -4,10 +4,10 @@ let currentAccessToken = null;
 async function getToken(event) {
   event.preventDefault();
 
-  const client_id = document.getElementById('client-id').value;
-  const client_secret = document.getElementById('client-secret').value;
+  const client_id = document.getElementById('client-id').value.trim();
+  const client_secret = document.getElementById('client-secret').value.trim();
 
-  const res = await fetch('/m2m-token', {
+  const res = await fetch('/m2m-token?grant_type=client_credentials', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ client_id, client_secret }),
@@ -27,10 +27,10 @@ async function getToken(event) {
 }
 
 async function refreshToken() {
-  const client_id = document.getElementById('client-id').value;
-  const client_secret = document.getElementById('client-secret').value;
+  const client_id = document.getElementById('client-id').value.trim();
+  const client_secret = document.getElementById('client-secret').value.trim();
 
-  const res = await fetch('/m2m-refresh-token', {
+  const res = await fetch('/m2m-refresh-token?grant_type=refresh_token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

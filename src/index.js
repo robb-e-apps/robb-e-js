@@ -10,7 +10,8 @@ import {
   ROBBE_BE_URL,
   APPLICATION_CODE,
 } from './config/config.js';
-import { handler as callbackHandler } from './api/callback.js';
+import { handler as callbackHandler } from './user/api/callback.js';
+import { forwardTokenRequest } from './m2m/api/proxy.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/user', (req, res) => {
   res.sendFile(path.join(__dirname, 'user/frontend/index.html'));
 });
 
@@ -113,6 +118,31 @@ app.get('/users/:tenantCode/:userCode', async (req, res) => {
     console.error('❌ Failed to proxy user request:', err);
     res.status(500).send('Proxy error');
   }
+});
+
+app.post('/m2m-token', async (req, res) => {
+  const { grant_type } = req.query;
+  const { client_id, client_secret } = req.body;
+
+  const { status, data } = await forwardTokenRequest(grant_type, {
+    client_id,
+    client_secret,
+  });
+
+  res.status(status).json(data);
+});
+
+app.post('/m2m-refresh-token', async (req, res) => {
+  const { grant_type } = req.query;
+  const { client_id, client_secret, refresh_token } = req.body;
+
+  const { status, data } = await forwardTokenRequest(grant_type, {
+    client_id,
+    client_secret,
+    refresh_token,
+  });
+
+  res.status(status).json(data);
 });
 
 app.get('/clear-cookies', (req, res) => {
