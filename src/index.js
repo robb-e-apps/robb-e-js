@@ -35,8 +35,16 @@ app.get('/error.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'user/frontend/error.html'));
 });
 
-app.get('/main.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'user/api/main.js'));
+app.get('/user-main.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'user/api/user-main.js'));
+});
+
+app.get('/m2m', (req, res) => {
+  res.sendFile(path.join(__dirname, 'm2m/frontend/index.html'));
+});
+
+app.get('/m2m/m2m-main.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'm2m/api/m2m-main.js'));
 });
 
 app.get('/oauth-callback', callbackHandler);

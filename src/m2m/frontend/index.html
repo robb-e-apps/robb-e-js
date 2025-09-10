@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>M2M OAuth 2.0 Demo</title>
+  </head>
+  <body>
+    <h1>M2M OAuth 2.0 Flow</h1>
+    <form id="auth-form">
+      <label for="client-id">Client ID:</label>
+      <input type="text" id="client-id" readonly /><br />
+
+      <label for="client-secret">Client Secret:</label>
+      <input type="text" id="client-secret" readonly /><br />
+
+      <button type="submit">🔐 Authorize (client_credentials)</button>
+    </form>
+
+    <button id="refresh-btn">Refresh Token</button>
+    <button id="call-api-btn">Call Protected API</button>
+
+    <pre id="result-box"></pre>
+
+    <script src="/m2m/m2m-main.js" type="module"></script>
+  </body>
+</html>
