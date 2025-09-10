@@ -35,8 +35,11 @@ export async function handler(req, res) {
     });
 
     if (!tokenRes.ok) {
-      const err = await tokenRes.text();
-      return res.status(500).send(`❌ Token exchange failed: ${err}`);
+      const errText = await tokenRes.text();
+      const errorJson = encodeURIComponent(errText);
+      const message = encodeURIComponent('Token exchange failed');
+
+      return res.redirect(`/error.html?message=${message}&error=${errorJson}`);
     }
 
     const { access_token, refresh_token } = await tokenRes.json();
