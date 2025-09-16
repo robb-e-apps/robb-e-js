@@ -24,20 +24,18 @@ Before running the demo, you must register and set up your **Application** on th
 
 1. Ensure you select a **Robb-e Sales product** (checkbox) when registering your workspace.
 2. In the left menu, go to **Portfolio → Products** and create a **Product**.
-3. Create at least one **Component** and add it to newly created **Free or Trial Edition**.
+3. Create at least one **Component** and add it to a newly created **Free or Trial Edition**.
 4. You can skip the **Pricing** tab in testing mode.
-5. Under the product’s **Integration** tab, create a new **Application**.
-   - Configure Redirect URI: `http://localhost:8095/oauth-callback`
-   - Configure Cancel URI: `http://localhost:8095/oauth-cancel`
+5. Under the product’s **Integration** tab, create a new **Application**:
+   - Redirect URI: `http://localhost:8095/oauth-callback`
+   - Cancel URI: `http://localhost:8095/oauth-cancel`
    - Select the default license type
-6. Save the generated **Application Code**.
-7. Open the existing `.env` file in this project and replace the dummy value of `APPLICATION_CODE` with your code from the Robb-e platform:
+6. Save the generated **Application Code** (`client_id`).
+7. Open the `.env` file in this project and replace the dummy value of `APPLICATION_CODE` with your code:
 
 ```env
 PORT=8095
 HOST=http://localhost
-PORT_FE=8080
-PORT_BE=3000
 
 APPLICATION_CODE=[paste-your-application-code-here]
 
@@ -66,7 +64,7 @@ The app will be available at:
 ## ▶️ Test the Integration — Authorization Code Flow (User Login)
 
 1. Open the demo app and click **User Flow**.
-1. Then click **Log in with Robb-e**.
+1. Click **Log in with Robb-e**.
 1. You are redirected to the Robb-e platform login screen. Enter your email and verification code.
 1. After login, confirm access for the product application.
 1. The demo app exchanges the authorization code for tokens and displays the **Access Token** and **Refresh Token** payloads.
@@ -94,7 +92,6 @@ The Application Owner must configure a Client on the Robb-e platform:
 Start the demo app if not already running:
 
 ```bash
-npm install
 npm start
 ```
 
