@@ -145,6 +145,42 @@ app.post('/m2m-refresh-token', async (req, res) => {
   res.status(status).json(data);
 });
 
+app.get(
+  '/clients/:tenantCode/:applicationCode/:clientCode',
+  async (req, res) => {
+    const { tenantCode, applicationCode, clientCode } = req.params;
+    const accessToken = req.headers.authorization?.split(' ')[1];
+
+    if (!accessToken) {
+      return res.status(401).send('Missing access token');
+    }
+
+    try {
+      const response = await fetch(
+        `${ROBBE_BE_URL}/tenants/${encodeURIComponent(tenantCode)}/applications/${encodeURIComponent(applicationCode)}/clients/${encodeURIComponent(clientCode)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).send(text);
+      }
+
+      const data = await response.json();
+      return res.json(data);
+    } catch (err) {
+      console.error('❌ Failed to proxy client request:', err);
+      return res.status(500).send('Proxy error');
+    }
+  },
+);
+
 app.get('/clear-cookies', (req, res) => {
   res.clearCookie('code_verifier', { path: '/' });
   res.clearCookie('oauth_state', { path: '/' });

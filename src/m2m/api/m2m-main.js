@@ -129,14 +129,52 @@ async function refreshToken() {
 }
 
 async function callProtectedApi() {
-  const res = await fetch('/protected-user', {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${currentAccessToken}` },
-  });
+  const resultBox = document.getElementById('result-box');
 
-  const result = document.getElementById('result-box');
-  const text = await res.text();
-  result.textContent = `🔐 API Response:\n${text}`;
+  if (!currentAccessToken) {
+    resultBox.textContent = '❌ No access token available.';
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(atob(currentAccessToken.split('.')[1]));
+  } catch (err) {
+    resultBox.textContent = '❌ Invalid access token format.';
+    return;
+  }
+
+  const { tenantCode, applicationCode, applicationClientCode } = payload;
+
+  try {
+    const res = await fetch(
+      `/clients/${tenantCode}/${applicationCode}/${applicationClientCode}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${currentAccessToken}`,
+        },
+      },
+    );
+
+    const text = await res.text();
+
+    if (!res.ok) {
+      resultBox.textContent = `❌ API Error:\n${text}`;
+      return;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+      resultBox.textContent = `API Response:\n${JSON.stringify(parsed, null, 2)}`;
+    } catch {
+      resultBox.textContent = `API Response:\n${text}`;
+    }
+    resultBox.scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    resultBox.textContent = `❌ Request failed: ${err.message}`;
+  }
 }
 
 window.onload = () => {
