@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Robb-e OAuth2 Demo</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+        color: #333;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      a.button {
+        display: inline-block;
+        text-decoration: none;
+        font-size: 1.2rem;
+        padding: 12px 24px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+      }
+
+      a.button:hover {
+        background-color: #0056b3;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 20px;
+        font-size: 0.9rem;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Robb-e OAuth2 Demo</h1>
+    <div class="button-group">
+      <a class="button" href="/user">🔐 User Flow</a>
+      <a class="button" href="/m2m">🤖 M2M Flow</a>
+    </div>
+    <footer>OAuth 2.0 | PKCE</footer>
+  </body>
+</html>

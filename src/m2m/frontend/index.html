@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>M2M OAuth 2.0 Demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+      }
+
+      h1 {
+        margin-bottom: 1rem;
+        color: #333;
+        text-align: center;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        max-width: 400px;
+        background-color: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input[type='text'],
+      input[type='password'] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        background-color: #eee;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      button.danger {
+        background-color: #dc3545;
+      }
+
+      button.danger:hover {
+        background-color: #b02a37;
+      }
+
+      .button-group {
+        display: none;
+        gap: 12px;
+        margin-top: 1rem;
+        justify-content: center;
+      }
+
+      .token-box {
+        background: white;
+        border-radius: 8px;
+        max-width: 90%;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+
+      .token-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-x: auto;
+        margin: 0;
+        font-size: 0.9rem;
+        background-color: #f8f8f8;
+        padding: 0.75rem;
+        border-radius: 6px;
+      }
+
+      #result-box {
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-width: 90%;
+        margin-top: 1.5rem;
+        background-color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 0.95rem;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      }
+
+      footer {
+        font-size: 0.9rem;
+        color: #777;
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      @media screen and (max-width: 600px) {
+        form {
+          width: 100%;
+          padding: 16px;
+        }
+
+        .token-box,
+        #result-box {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Machine-to-Machine OAuth 2.0 Flow</h1>
+
+    <form id="auth-form">
+      <label for="client-id">Client ID:</label>
+      <input type="text" id="client-id" />
+
+      <label for="client-secret">Client Secret:</label>
+      <input type="password" id="client-secret" />
+
+      <button type="submit">Authorize</button>
+    </form>
+
+    <div class="button-group" id="actions">
+      <button id="refresh-btn">Refresh Token</button>
+      <button id="call-api-btn">Call Protected API</button>
+      <button id="clear-btn" class="danger" style="display: none">
+        Clear Tokens
+      </button>
+    </div>
+
+    <div class="token-box" id="access-box" style="display: none">
+      <div class="token-title">Access Token Payload</div>
+      <pre id="access-token-info"></pre>
+    </div>
+
+    <div class="token-box" id="refresh-box" style="display: none">
+      <div class="token-title">Refresh Token Payload</div>
+      <pre id="refresh-token-info"></pre>
+    </div>
+
+    <pre id="result-box" style="display: none"></pre>
+
+    <footer>Robb-e OAuth2 Demo</footer>
+
+    <script src="/m2m/m2m-main.js" type="module"></script>
+  </body>
+</html>

@@ -3,7 +3,7 @@ import {
   APPLICATION_CODE,
   HOST,
   PORT,
-} from '../config/config.js';
+} from '../../config/config.js';
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
