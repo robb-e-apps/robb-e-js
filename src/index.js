@@ -6,8 +6,8 @@ import crypto from 'crypto';
 import {
   HOST,
   PORT,
-  ROBBE_FE_URL,
-  ROBBE_BE_URL,
+  ROBB_E_FE_URL,
+  ROBB_E_BE_URL,
   APPLICATION_CODE,
 } from './config/config.js';
 import { handler as callbackHandler } from './user/api/callback.js';
@@ -78,7 +78,7 @@ app.get('/auth-url', (req, res) => {
   const redirectUri = `${HOST}:${PORT}/oauth-callback`;
 
   const url =
-    `${ROBBE_FE_URL}/app/authorize` +
+    `${ROBB_E_FE_URL}/app/authorize` +
     `?client_id=${APPLICATION_CODE}` +
     `&code_challenge=${codeChallenge}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
@@ -98,7 +98,7 @@ app.get('/users/:tenantCode/:userCode', async (req, res) => {
 
   try {
     const response = await fetch(
-      `${ROBBE_BE_URL}/tenants/${encodeURIComponent(tenantCode)}/users/${encodeURIComponent(userCode)}`,
+      `${ROBB_E_BE_URL}/tenants/${encodeURIComponent(tenantCode)}/users/${encodeURIComponent(userCode)}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -157,7 +157,7 @@ app.get(
 
     try {
       const response = await fetch(
-        `${ROBBE_BE_URL}/tenants/${encodeURIComponent(tenantCode)}/applications/${encodeURIComponent(applicationCode)}/clients/${encodeURIComponent(clientCode)}`,
+        `${ROBB_E_BE_URL}/tenants/${encodeURIComponent(tenantCode)}/applications/${encodeURIComponent(applicationCode)}/clients/${encodeURIComponent(clientCode)}`,
         {
           method: 'GET',
           headers: {

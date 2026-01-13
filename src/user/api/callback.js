@@ -1,5 +1,5 @@
 import {
-  ROBBE_BE_URL,
+  ROBB_E_BE_URL,
   APPLICATION_CODE,
   HOST,
   PORT,
@@ -23,7 +23,7 @@ export async function handler(req, res) {
   if (state !== storedState) return res.status(400).send('Invalid state');
 
   try {
-    const tokenRes = await fetch(`${ROBBE_BE_URL}/oauth/token`, {
+    const tokenRes = await fetch(`${ROBB_E_BE_URL}/oauth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
