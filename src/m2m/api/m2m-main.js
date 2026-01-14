@@ -1,18 +1,35 @@
 let currentAccessToken = null;
 let currentRefreshToken = null;
 
+function base64UrlDecodeToString(b64url) {
+  let b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
+  return atob(b64);
+}
+
 function decodeJwt(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!token) return '❌ Missing token.';
+
+    token = token.trim().replace(/^Bearer\s+/i, '');
+
+    const parts = token.split('.');
+    if (parts.length !== 3)
+      return `❌ Invalid JWT (expected 3 parts, got ${parts.length}).`;
+
+    const json = base64UrlDecodeToString(parts[1]);
+    const payload = JSON.parse(json);
+
     ['iat', 'exp'].forEach((key) => {
       if (payload[key]) {
         const readable = new Date(payload[key] * 1000).toISOString();
         payload[key] = `${payload[key]} (${readable})`;
       }
     });
+
     return JSON.stringify(payload, null, 2);
   } catch (e) {
-    return '❌ Invalid token format.';
+    return `❌ Can't decode token: ${e?.message || e}`;
   }
 }
 

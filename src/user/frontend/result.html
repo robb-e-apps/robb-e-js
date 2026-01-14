@@ -79,9 +79,26 @@
     <button id="logout-btn" style="background-color: #dc3545">Logout</button>
 
     <script type="module">
+      function base64UrlDecodeToString(b64url) {
+        let b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        return atob(b64);
+      }
+
+      function getJwtPayload(token) {
+        if (!token) throw new Error('Missing token');
+        token = token.trim().replace(/^Bearer\s+/i, '');
+
+        const parts = token.split('.');
+        if (parts.length !== 3)
+          throw new Error(`Invalid JWT (got ${parts.length} parts)`);
+
+        return JSON.parse(base64UrlDecodeToString(parts[1]));
+      }
+
       function decodeAndFormatToken(token) {
         try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
+          const payload = getJwtPayload(token);
 
           ['iat', 'exp'].forEach((key) => {
             if (payload[key]) {
@@ -92,7 +109,7 @@
 
           return JSON.stringify(payload, null, 2);
         } catch (e) {
-          return 'Invalid token format.';
+          return `Invalid token format. ${e?.message || ''}`.trim();
         }
       }
 
