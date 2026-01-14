@@ -76,13 +76,12 @@ app.get('/auth-url', (req, res) => {
   res.cookie('oauth_state', state, { path: '/', httpOnly: true });
 
   const redirectUri = `${HOST}:${PORT}/oauth-callback`;
-
   const url =
     `${ROBB_E_FE_URL}/app/authorize` +
     `?client_id=${APPLICATION_CODE}` +
     `&code_challenge=${codeChallenge}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&scopes=license:own` +
+    `&scopes=read:own_license` +
     `&state=${state}`;
 
   res.json({ url });
