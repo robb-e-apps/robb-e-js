@@ -155,7 +155,7 @@ async function callProtectedApi() {
 
   let payload;
   try {
-    payload = JSON.parse(atob(currentAccessToken.split('.')[1]));
+    payload = decodeJwt(currentAccessToken);
   } catch (err) {
     resultBox.textContent = '❌ Invalid access token format.';
     return;
