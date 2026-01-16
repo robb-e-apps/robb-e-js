@@ -147,7 +147,7 @@
 
         let payload;
         try {
-          payload = JSON.parse(atob(accessToken.split('.')[1]));
+          payload = getJwtPayload(accessToken);
         } catch {
           alert('Invalid access token format');
           return;
