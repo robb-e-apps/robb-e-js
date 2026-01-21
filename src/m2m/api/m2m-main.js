@@ -1,19 +1,35 @@
 let currentAccessToken = null;
 let currentRefreshToken = null;
 
-function decodeJwt(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    ['iat', 'exp'].forEach((key) => {
-      if (payload[key]) {
-        const readable = new Date(payload[key] * 1000).toISOString();
-        payload[key] = `${payload[key]} (${readable})`;
-      }
-    });
-    return JSON.stringify(payload, null, 2);
-  } catch (e) {
-    return '❌ Invalid token format.';
-  }
+function base64UrlDecodeToString(b64url) {
+  let b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
+  return atob(b64);
+}
+
+function decodeJwtPayload(token) {
+  if (!token) throw new Error('Missing token');
+
+  token = token.trim().replace(/^Bearer\s+/i, '');
+  const parts = token.split('.');
+  if (parts.length !== 3)
+    throw new Error(`Invalid JWT (got ${parts.length} parts)`);
+
+  const json = base64UrlDecodeToString(parts[1]);
+  return JSON.parse(json);
+}
+
+function formatPayloadForUi(payload) {
+  const copy = structuredClone(payload);
+
+  ['iat', 'exp'].forEach((key) => {
+    if (copy[key]) {
+      const readable = new Date(copy[key] * 1000).toISOString();
+      copy[key] = `${copy[key]} (${readable})`;
+    }
+  });
+
+  return JSON.stringify(copy, null, 2);
 }
 
 function updateUIWithTokens() {
@@ -23,14 +39,14 @@ function updateUIWithTokens() {
   if (access) {
     currentAccessToken = access;
     document.getElementById('access-token-info').textContent =
-      decodeJwt(access);
+      formatPayloadForUi(decodeJwtPayload(access));
     document.getElementById('access-box').style.display = 'block';
   }
 
   if (refresh) {
     currentRefreshToken = refresh;
     document.getElementById('refresh-token-info').textContent =
-      decodeJwt(refresh);
+      formatPayloadForUi(decodeJwtPayload(refresh));
     document.getElementById('refresh-box').style.display = 'block';
   }
 
@@ -131,49 +147,58 @@ async function refreshToken() {
 async function callProtectedApi() {
   const resultBox = document.getElementById('result-box');
 
-  if (!currentAccessToken) {
+  const access = currentAccessToken || sessionStorage.getItem('access_token');
+  if (!access) {
     resultBox.textContent = '❌ No access token available.';
     return;
   }
 
-  let payload;
-  try {
-    payload = JSON.parse(atob(currentAccessToken.split('.')[1]));
-  } catch (err) {
-    resultBox.textContent = '❌ Invalid access token format.';
+  const payload = decodeJwtPayload(access);
+
+  if (!payload || typeof payload !== 'object') {
+    resultBox.textContent =
+      '❌ Could not decode access token payload.\n\n' +
+      'access(first 60): ' +
+      String(access).slice(0, 60) +
+      '...\n\n' +
+      'payload: ' +
+      JSON.stringify(payload, null, 2);
     return;
   }
 
-  const { tenantCode, applicationCode, applicationClientCode } = payload;
+  const tenantCode = payload.tenantCode;
+  const applicationCode = payload.applicationCode;
+  const applicationClientCode = payload.applicationClientCode;
+
+  if (!tenantCode || !applicationCode || !applicationClientCode) {
+    resultBox.textContent =
+      '❌ Missing required fields in token payload.\n\n' +
+      JSON.stringify(payload, null, 2);
+    return;
+  }
+
+  const url = `/clients/${tenantCode}/${applicationCode}/${applicationClientCode}`;
+  resultBox.textContent = `➡️ Calling:\n${url}`;
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${access}` },
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    resultBox.textContent = `❌ API Error:\n${text}`;
+    return;
+  }
 
   try {
-    const res = await fetch(
-      `/clients/${tenantCode}/${applicationCode}/${applicationClientCode}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${currentAccessToken}`,
-        },
-      },
-    );
-
-    const text = await res.text();
-
-    if (!res.ok) {
-      resultBox.textContent = `❌ API Error:\n${text}`;
-      return;
-    }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-      resultBox.textContent = `API Response:\n${JSON.stringify(parsed, null, 2)}`;
-    } catch {
-      resultBox.textContent = `API Response:\n${text}`;
-    }
-    resultBox.scrollIntoView({ behavior: 'smooth' });
-  } catch (err) {
-    resultBox.textContent = `❌ Request failed: ${err.message}`;
+    resultBox.textContent = `✅ API Response:\n${JSON.stringify(
+      JSON.parse(text),
+      null,
+      2,
+    )}`;
+  } catch {
+    resultBox.textContent = `✅ API Response:\n${text}`;
   }
 }
 
@@ -181,11 +206,7 @@ window.onload = () => {
   updateUIWithTokens();
 
   document.getElementById('auth-form').addEventListener('submit', getToken);
-  document
-    .getElementById('refresh-btn')
-    .addEventListener('click', refreshToken);
-  document
-    .getElementById('call-api-btn')
-    .addEventListener('click', callProtectedApi);
-  document.getElementById('clear-btn').addEventListener('click', clearTokens);
+  document.getElementById('refresh-btn').onclick = refreshToken;
+  document.getElementById('call-api-btn').onclick = callProtectedApi;
+  document.getElementById('clear-btn').onclick = clearTokens;
 };
