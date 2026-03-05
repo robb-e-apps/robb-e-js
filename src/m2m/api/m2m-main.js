@@ -202,6 +202,15 @@ async function callProtectedApi() {
   }
 }
 
+async function getCredentials() {
+  const flow = 'application-client';
+  const params = new URLSearchParams({ flow });
+
+  const res = await fetch(`/auth-url?${params.toString()}`);
+  const { url } = await res.json();
+  window.location.href = url;
+}
+
 window.onload = () => {
   updateUIWithTokens();
 
@@ -209,4 +218,6 @@ window.onload = () => {
   document.getElementById('refresh-btn').onclick = refreshToken;
   document.getElementById('call-api-btn').onclick = callProtectedApi;
   document.getElementById('clear-btn').onclick = clearTokens;
+
+  document.getElementById('get-creds-btn').onclick = getCredentials;
 };
