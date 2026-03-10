@@ -99,7 +99,7 @@ app.get('/auth-url', (req, res) => {
       client_description: 'Optional Client Description',
       flow,
     });
-    const scopes = ['read:own_license', 'write:own_license'];
+    const scopes = ['read:own_license', 'write:own_client'];
     scopes.forEach((scope) => params.append('scopes', scope));
 
     url = `${ROBB_E_FE_URL}/app/authorize?${params.toString()}`;
