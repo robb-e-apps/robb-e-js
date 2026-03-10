@@ -1,5 +1,8 @@
 async function login() {
-  const res = await fetch('/auth-url');
+  const flow = 'application-user';
+  const params = new URLSearchParams({ flow });
+
+  const res = await fetch(`/auth-url?${params.toString()}`);
   const { url } = await res.json();
   window.location.href = url;
 }

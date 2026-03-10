@@ -55,6 +55,8 @@ app.get('/m2m/m2m-main.js', (req, res) => {
 app.get('/oauth-callback', callbackHandler);
 
 app.get('/auth-url', (req, res) => {
+  const { flow = 'application-user' } = req.query;
+
   const randomBytes = crypto.randomBytes(32);
 
   const codeVerifier = Array.from(randomBytes, (b) =>
@@ -76,13 +78,32 @@ app.get('/auth-url', (req, res) => {
   res.cookie('oauth_state', state, { path: '/', httpOnly: true });
 
   const redirectUri = `${HOST}:${PORT}/oauth-callback`;
-  const url =
-    `${ROBB_E_FE_URL}/app/authorize` +
-    `?client_id=${APPLICATION_CODE}` +
-    `&code_challenge=${codeChallenge}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&scopes=read:own_license` +
-    `&state=${state}`;
+
+  let url;
+
+  if (flow === 'application-user') {
+    url =
+      `${ROBB_E_FE_URL}/app/authorize` +
+      `?client_id=${APPLICATION_CODE}` +
+      `&code_challenge=${codeChallenge}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&scopes=read:own_license` +
+      `&state=${state}` +
+      `&flow=${flow}`;
+  }
+
+  if (flow === 'application-client') {
+    const params = new URLSearchParams({
+      client_id: APPLICATION_CODE,
+      client_name: 'Optional Client Name',
+      client_description: 'Optional Client Description',
+      flow,
+    });
+    const scopes = ['read:own_license', 'write:own_client'];
+    scopes.forEach((scope) => params.append('scopes', scope));
+
+    url = `${ROBB_E_FE_URL}/app/authorize?${params.toString()}`;
+  }
 
   res.json({ url });
 });
